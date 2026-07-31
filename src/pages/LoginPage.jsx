@@ -78,7 +78,7 @@ export default function LoginPage() {
               fontSize: "1.8rem",
             }}
           >
-            <img src="public/img/bola-removebg-preview.png" alt="Bola de futebol com as cores verde e azul " />
+            <img src="/bola-removebg-preview.png" alt="Bola de futebol com as cores verde e azul " />
           </div>
           <h1 style={{ fontSize: "2rem", color: "#fff", letterSpacing: "1px" }}>
             FUTEBOL DA CIDADE
