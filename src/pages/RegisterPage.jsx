@@ -222,7 +222,7 @@ export default function RegisterPage() {
             }}
           >
             <img
-              src="/bola-removebg-preview.png"
+              src="/img/bola-removebg-preview.png"
               alt="Bola de futebol com as cores verde e azul "
             />
           </div>
