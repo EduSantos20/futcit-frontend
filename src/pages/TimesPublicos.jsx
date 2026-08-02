@@ -94,7 +94,7 @@ export default function TimesPublicos() {
                 lineHeight: 1.2,
               }}
             >
-              Seu Time Pronto Para o{" "}
+              Seu Time está Pronto Para o{" "}
               <span style={{ background: "var(--verde-grad)", WebkitBackgroundClip: "text", WebkitTextFillColor: "transparent" }}>
                 Próximo Jogo?
               </span>
