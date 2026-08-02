@@ -22,34 +22,51 @@ export default function TimesPublicos() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    timesApi
-      .publicos()
-      .then(async ({ data }) => {
-        setTimes(data);
-        // Carrega membros de todos os times em paralelo
-        const resultados = await Promise.allSettled(
-          data.map((t) =>
-            solicitacoesApi
-              .membros(t.id)
-              .then((r) => ({ id: t.id, membros: r.data })),
-          ),
-        );
-        const map = {};
-        resultados.forEach((r) => {
-          if (r.status === "fulfilled") map[r.value.id] = r.value.membros;
-        });
-        setMembros(map);
-      })
-      .catch(() => toast.error("Erro ao carregar times"))
-      .finally(() => setLoading(false));
-  }, []);
+  timesApi
+    .publicos()
+    .then(async ({ data }) => {
+      console.log("Resposta times:", data);
 
-  const filtrados = times.filter(
-    (t) =>
-      t.nome.toLowerCase().includes(busca.toLowerCase()) ||
-      t.bairro.toLowerCase().includes(busca.toLowerCase()) ||
-      t.cidade.toLowerCase().includes(busca.toLowerCase()),
-  );
+      // Garante que sempre será um array
+      const listaTimes = Array.isArray(data)
+        ? data
+        : data?.content || data?.data || data?.times || [];
+
+      setTimes(listaTimes);
+
+      // Carrega membros somente se existirem times
+      const resultados = await Promise.allSettled(
+        listaTimes.map((t) =>
+          solicitacoesApi
+            .membros(t.id)
+            .then((r) => ({ id: t.id, membros: r.data }))
+        )
+      );
+
+      const map = {};
+
+      resultados.forEach((r) => {
+        if (r.status === "fulfilled") {
+          map[r.value.id] = r.value.membros;
+        }
+      });
+
+      setMembros(map);
+    })
+    .catch((err) => {
+      console.error("Erro ao carregar times:", err);
+      toast.error("Erro ao carregar times");
+      setTimes([]);
+    })
+    .finally(() => setLoading(false));
+}, []);
+
+const filtrados = times.filter(
+  (t) =>
+    (t.nome || "").toLowerCase().includes(busca.toLowerCase()) ||
+    (t.bairro || "").toLowerCase().includes(busca.toLowerCase()) ||
+    (t.cidade || "").toLowerCase().includes(busca.toLowerCase())
+);
 
   return (
     <div style={{ background: "var(--bg)", minHeight: "100vh" }}>
