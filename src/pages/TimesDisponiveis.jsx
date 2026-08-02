@@ -27,14 +27,40 @@ export default function TimesDisponiveis() {
   const [enviando, setEnviando] = useState(false);
 
   useEffect(() => {
+  timesApi
+    .disponiveis()
+    .then(({ data }) => {
+      console.log("Times disponíveis:", data);
+
+      const listaTimes = Array.isArray(data)
+        ? data
+        : data?.content || data?.data || data?.times || [];
+
+      setDisponiveis(listaTimes);
+    })
+    .catch((err) => {
+      console.error("Erro ao carregar times disponíveis:", err);
+      toast.error("Erro ao carregar");
+      setDisponiveis([]);
+    })
+    .finally(() => setLoading(false));
+
+  if (usuario?.tipoUsuario === "DONO") {
     timesApi
-      .disponiveis()
-      .then(({ data }) => setDisponiveis(data))
-      .catch(() => toast.error("Erro ao carregar"))
-      .finally(() => setLoading(false));
-    if (usuario?.tipoUsuario === "DONO")
-      timesApi.meus().then(({ data }) => setMeusTimes(data));
-  }, [usuario]);
+      .meus()
+      .then(({ data }) => {
+        const listaMeusTimes = Array.isArray(data)
+          ? data
+          : data?.content || data?.data || data?.times || [];
+
+        setMeusTimes(listaMeusTimes);
+      })
+      .catch((err) => {
+        console.error("Erro ao carregar meus times:", err);
+        setMeusTimes([]);
+      });
+  }
+}, [usuario]);
 
   const abrir = (adv) => {
     if (!usuario) {
