@@ -51,8 +51,12 @@ export default function Navbar() {
           <span></span>
         </button>
 
-        {usuario?.fotoPerfil && (
-          <img className="navbar-avatar" src={usuario.fotoPerfil} alt={usuario.nome} />
+        {usuario?.fotoPerfil && typeof usuario.fotoPerfil === "string" && (
+          <img
+            className="navbar-avatar"
+            src={usuario.fotoPerfil}
+            alt={usuario.nome || "Usuário"}
+          />
         )}
 
         <NavLink to="/" className="navbar-brand" onClick={fecharMenu}>
@@ -158,7 +162,7 @@ export default function Navbar() {
               )}
               <NavLink to="/perfil" onClick={fecharMenu} style={{ textDecoration: 'none', color: 'inherit' }}>
                 <div style={{ display: "flex", flexDirection: "column", gap: 0 }}>
-                  <span>{usuario.nome.split(" ")[0]}</span>
+                  <span>{(usuario.nome?.split(" ")[0] || "Usuário")}</span>
                   <span
                     style={{
                       fontSize: ".7rem",

@@ -25,7 +25,6 @@ export default function TimesPublicos() {
   timesApi
     .publicos()
     .then(async ({ data }) => {
-      console.log("Resposta times:", data);
 
       // Garante que sempre será um array
       const listaTimes = Array.isArray(data)
@@ -83,25 +82,6 @@ const filtrados = times.filter(
       >
         <div className="container">
           <div style={{ maxWidth: 700, margin: "0 auto", textAlign: "center" }}>
-            {/* <div
-              style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: ".5rem",
-                background: "rgba(50,205,50,.1)",
-                border: "1px solid rgba(50,205,50,.3)",
-                borderRadius: 25,
-                padding: ".2rem .9rem",
-                fontSize: "1rem",
-                color: "var(--verde)",
-                fontWeight: 700,
-                marginBottom: "1.5rem",
-              }}
-            >
-              <img src="../public/img/bola-removebg-preview.png" alt="Bola de futebol com as cores verde e azul " />
-              Bem-vindo à Plataforma de Futebol
-            </div>*/}
-
             <h1
               style={{
                 fontSize: "2.8rem",
