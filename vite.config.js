@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 // Se VITE_API_URL estiver definido (ex: ngrok do backend), usa ele.
 // Caso contrário, usa localhost:8080 normalmente.
-const backendUrl = process.env.VITE_API_URL || 'https://localhost:8080'
+const backendUrl = process.env.VITE_API_URL || 'https://futcit-backend.onrender.com'
 
 export default defineConfig({
   plugins: [react()],
