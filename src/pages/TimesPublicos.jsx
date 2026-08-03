@@ -25,7 +25,7 @@ export default function TimesPublicos() {
   timesApi
     .publicos()
     .then(async ({ data }) => {
-      //console.log("Resposta times:", data);
+      console.log("Resposta times:", data);
 
       // Garante que sempre será um array
       const listaTimes = Array.isArray(data)
