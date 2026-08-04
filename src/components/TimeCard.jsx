@@ -1,10 +1,17 @@
 import { FaMapMarkerAlt, FaUsers, FaClock } from "react-icons/fa";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export function Escudo({ time, size = 52 }) {
-  if (time?.escudoUrl)
+  const escudoUrl = time?.escudoUrl
+    ? time.escudoUrl.startsWith("http")
+      ? time.escudoUrl
+      : `${API_URL}${time.escudoUrl}`
+    : null;
+
+  if (escudoUrl)
     return (
       <img
-        src={time.escudoUrl}
+        src={escudoUrl}
         alt={time.nome}
         style={{
           width: size,
@@ -17,7 +24,9 @@ export function Escudo({ time, size = 52 }) {
         }}
       />
     );
+
   const nome = time?.nome || "?";
+
   return (
     <div
       style={{
@@ -42,10 +51,16 @@ export function Escudo({ time, size = 52 }) {
 }
 
 export function AvatarJogador({ usuario, size = 36 }) {
-  if (usuario?.fotoPerfil)
+  const fotoPerfil = usuario?.fotoPerfil
+    ? usuario.fotoPerfil.startsWith("http")
+      ? usuario.fotoPerfil
+      : `${API_URL}${usuario.fotoPerfil}`
+    : null;
+
+  if (fotoPerfil)
     return (
       <img
-        src={usuario.fotoPerfil}
+        src={fotoPerfil}
         alt={usuario.nome}
         style={{
           width: size,
@@ -56,6 +71,7 @@ export function AvatarJogador({ usuario, size = 36 }) {
         }}
       />
     );
+
   return (
     <div
       style={{

@@ -21,11 +21,13 @@ const VAZIO = {
   cidade: "",
   numerJogadores: "",
   horariosDisponiveis: "",
+  escudoUrl: "",
 };
 const LIMITE = 2;
 
 export default function MeusTimes() {
   const fileRefs = useRef({});
+  const escudoModalRef = useRef();
   const [times, setTimes] = useState([]);
   const [membros, setMembros] = useState({}); // { [timeId]: MembroDTO[] }
   const [pendentes, setPendentes] = useState({}); // { [timeId]: SolicitacaoDTO[] }
@@ -33,6 +35,8 @@ export default function MeusTimes() {
   const [modal, setModal] = useState(null);
   const [editId, setEditId] = useState(null);
   const [form, setForm] = useState(VAZIO);
+  const [previewEscudo, setPreviewEscudo] = useState(null);
+  const [escudoFile, setEscudoFile] = useState(null);
   const [salvando, setSalvando] = useState(false);
   const [confirmDel, setConfirmDel] = useState(null);
   const [confirmRemoverMembro, setConfirmRemoverMembro] = useState(null);
@@ -99,26 +103,63 @@ export default function MeusTimes() {
     setForm((f) => ({ ...f, [k]: valorFinal }));
   };
 
+  const onEscudoModal = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    if (file.size > 2 * 1024 * 1024) {
+      toast.error("Escudo máx 2MB");
+      return;
+    }
+    setEscudoFile(file);
+    const reader = new FileReader();
+    reader.onload = (ev) => {
+      const base64 = ev.target.result;
+      setPreviewEscudo(base64);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const salvar = async () => {
     if (!form.nome || !form.bairro || !form.cidade) {
       toast.error("Nome, bairro e cidade são obrigatórios");
       return;
     }
+    if (!editId && !escudoFile) {
+      toast.error("O escudo do time é obrigatório na criação.");
+      return;
+    }
     setSalvando(true);
     try {
-      const p = { ...form, numerJogadores: Number(form.numerJogadores) || 0 };
+      const payload = { ...form, numerJogadores: Number(form.numerJogadores) || 0 };
+      delete payload.escudoUrl;
+
       if (editId) {
-        const { data } = await timesApi.atualizar(editId, p);
-        setTimes((v) => v.map((t) => (t.id === editId ? data : t)));
+        const { data: timeAtualizado } = await timesApi.atualizar(editId, payload);
+
+        if (escudoFile) {
+          const fd = new FormData();
+          fd.append("arquivo", escudoFile);
+          const { data: timeComEscudo } = await timesApi.escudo(editId, fd);
+          setTimes((v) => v.map((t) => (t.id === editId ? timeComEscudo : t)));
+        } else {
+          setTimes((v) => v.map((t) => (t.id === editId ? { ...t, ...timeAtualizado } : t)));
+        }
         toast.success("Time atualizado!");
       } else {
-        const { data } = await timesApi.criar(p);
-        setTimes((v) => [...v, data]);
-        setPendentes((p) => ({ ...p, [data.id]: [] }));
-        setMembros((p) => ({ ...p, [data.id]: [] }));
+        const { data: novoTime } = await timesApi.criar(payload);
+
+        const fd = new FormData();
+        fd.append("arquivo", escudoFile);
+        const { data: timeComEscudo } = await timesApi.escudo(novoTime.id, fd);
+
+        setTimes((v) => [...v, timeComEscudo]);
+        setPendentes((p) => ({ ...p, [timeComEscudo.id]: [] }));
+        setMembros((p) => ({ ...p, [timeComEscudo.id]: [] }));
         toast.success("Time cadastrado!");
       }
       setModal(null);
+      setPreviewEscudo(null);
+      setEscudoFile(null);
     } catch (err) {
       toast.error(err.response?.data?.erro || "Erro ao salvar");
     } finally {
@@ -239,6 +280,8 @@ export default function MeusTimes() {
               }
               setForm(VAZIO);
               setEditId(null);
+              setPreviewEscudo(null);
+              setEscudoFile(null);
               setModal("form");
             }}
             disabled={times.length >= LIMITE}
@@ -369,7 +412,10 @@ export default function MeusTimes() {
                             cidade: t.cidade,
                             numerJogadores: t.numerJogadores,
                             horariosDisponiveis: t.horariosDisponiveis || "",
+                            escudoUrl: t.escudoUrl || "",
                           });
+                          setPreviewEscudo(t.escudoUrl || null);
+                          setEscudoFile(null);
                           setEditId(t.id);
                           setModal("form");
                         }}
@@ -635,9 +681,59 @@ export default function MeusTimes() {
 
       {/* Modal criar/editar */}
       {modal === "form" && (
-        <div className="modal-overlay" onClick={() => setModal(null)}>
+        <div className="modal-overlay" onClick={() => { setModal(null); setPreviewEscudo(null); setEscudoFile(null); }}>
           <div className="modal" onClick={(e) => e.stopPropagation()}>
             <h2>{editId ? "Editar Time" : "Novo Time"}</h2>
+
+            <div style={{ display: "flex", justifyContent: "center", marginBottom: "1.25rem" }}>
+              <div style={{ position: "relative" }}>
+                <div
+                  onClick={() => escudoModalRef.current?.click()}
+                  style={{
+                    width: 92,
+                    height: 92,
+                    borderRadius: "50%",
+                    background: previewEscudo ? "transparent" : "rgba(50,205,50,.08)",
+                    border: `2px dashed ${previewEscudo ? "var(--verde)" : "var(--borda-hover)"}`,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    overflow: "hidden",
+                  }}
+                >
+                  {previewEscudo ? (
+                    <img src={previewEscudo} alt="Escudo do time" style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                  ) : (
+                    <FaCamera style={{ fontSize: "1.4rem", color: "var(--muted)" }} />
+                  )}
+                </div>
+                <div
+                  onClick={() => escudoModalRef.current?.click()}
+                  style={{
+                    position: "absolute",
+                    bottom: 0,
+                    right: 0,
+                    background: "var(--verde-grad)",
+                    borderRadius: "50%",
+                    width: 24,
+                    height: 24,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    cursor: "pointer",
+                    border: "2px solid var(--card)",
+                  }}
+                >
+                  <FaCamera style={{ fontSize: ".6rem", color: "#fff" }} />
+                </div>
+                <input ref={escudoModalRef} type="file" accept="image/*" style={{ display: "none" }} onChange={onEscudoModal} />
+              </div>
+            </div>
+            <p style={{ textAlign: "center", fontSize: ".74rem", color: "var(--muted2)", marginBottom: "1.25rem", marginTop: "-.5rem" }}>
+              Escudo do time {editId ? '(opcional na edição)' : '*'}
+            </p>
+
             <div className="form-group">
               <label>Nome do time *</label>
               <input
@@ -690,7 +786,7 @@ export default function MeusTimes() {
               />
             </div>
             <div className="modal-actions">
-              <button className="btn btn-ghost" onClick={() => setModal(null)}>
+              <button className="btn btn-ghost" onClick={() => { setModal(null); setPreviewEscudo(null); setEscudoFile(null); }}>
                 Cancelar
               </button>
               <button
