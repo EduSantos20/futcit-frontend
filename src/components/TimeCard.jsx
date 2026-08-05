@@ -60,7 +60,7 @@ export function AvatarJogador({ usuario, size = 36 }) {
   if (fotoPerfil)
     return (
       <img
-        src={fotoPerfil}
+        src={usuario.fotoPerfil}
         alt={usuario.nome}
         style={{
           width: size,
