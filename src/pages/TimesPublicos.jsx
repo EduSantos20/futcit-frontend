@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { timesApi, solicitacoesApi } from "../api";
 import useAuth from "../store/authStore";
-import TimeCard from "../components/TimeCard";
+import TimeCard, { AvatarJogador } from "../components/TimeCard";
 import toast from "react-hot-toast";
 import {
   FaSearch,
@@ -20,6 +20,7 @@ export default function TimesPublicos() {
   const [membros, setMembros] = useState({});
   const [busca, setBusca] = useState("");
   const [loading, setLoading] = useState(true);
+  const [modalTime, setModalTime] = useState(null);
 
   useEffect(() => {
   timesApi
@@ -315,11 +316,46 @@ const filtrados = times.filter(
         ) : (
           <div className="times-grid">
             {filtrados.map((t) => (
-              <TimeCard key={t.id} time={t} membros={membros[t.id] || []} />
+              <div key={t.id} onClick={() => setModalTime(t)} style={{ cursor: "pointer" }}>
+                <TimeCard time={t} membros={membros[t.id] || []} />
+              </div>
             ))}
           </div>
         )}
       </div>
+
+      {modalTime && (
+        <div className="modal-overlay" onClick={() => setModalTime(null)}>
+          <div className="modal" onClick={(e) => e.stopPropagation()}>
+            <h2 style={{ marginBottom: "1.5rem" }}>Jogadores do {modalTime.nome}</h2>
+            {(membros[modalTime.id] || []).length > 0 ? (
+              <div style={{ display: "flex", flexDirection: "column", gap: ".75rem", maxHeight: '60vh', overflowY: 'auto', paddingRight: '1rem', marginRight: '-1rem' }}>
+                {(membros[modalTime.id] || []).map((m) => (
+                  <div
+                    key={m.id}
+                    style={{ display: "flex", alignItems: "center", gap: ".75rem", padding: ".65rem .85rem", background: "var(--card)", borderRadius: 8, border: "1px solid var(--borda)" }}
+                  >
+                    <AvatarJogador usuario={{ nome: m.usuarioNome, fotoPerfil: m.usuarioFoto }} size={40} />
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ fontWeight: 700, fontSize: ".92rem", color: "#fff" }}>{m.usuarioNome}</div>
+                      <div style={{ fontSize: ".77rem", color: "var(--muted)", marginTop: ".1rem" }}>{m.posicao || "Sem posição"}</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div className="empty-state" style={{ padding: '2rem 0' }}>
+                <p>Nenhum jogador cadastrado neste time.</p>
+              </div>
+            )}
+            <div className="modal-actions">
+              <button className="btn btn-ghost" onClick={() => setModalTime(null)}>
+                Fechar
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
