@@ -1,4 +1,6 @@
-import { FaMapMarkerAlt, FaUsers, FaClock } from "react-icons/fa";
+import { FaMapMarkerAlt, FaUsers, FaClock, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import useAuth from "../store/authStore";
+
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8080";
 
 export function Escudo({ time, size = 52 }) {
@@ -94,6 +96,8 @@ export function AvatarJogador({ usuario, size = 36 }) {
 }
 
 export default function TimeCard({ time, acoes, membros }) {
+  const { usuario } = useAuth();
+  const isOwner = usuario && usuario.id === time.usuarioId;
   const disponivel = time.statusDesafio === "DISPONIVEL";
 
   return (
@@ -213,6 +217,61 @@ export default function TimeCard({ time, acoes, membros }) {
           </div>
         )}
       </div>
+
+      {/* Social Links */}
+      {(time.instagram || (isOwner && usuario?.telefone)) && (
+        <div
+          style={{
+            display: "flex",
+            gap: "1rem",
+            marginTop: "0.75rem",
+            paddingTop: "0.75rem",
+            borderTop: "1px solid var(--borda)",
+            flexWrap: "wrap",
+          }}
+        >
+          {time.instagram && (
+            <a
+              href={`https://instagram.com/${time.instagram.replace("@", "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="Instagram do Time"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                color: "var(--muted)",
+                textDecoration: "none",
+                fontSize: "0.8rem",
+              }}
+            >
+              <FaInstagram />
+              <span>{time.instagram}</span>
+            </a>
+          )}
+          {isOwner && usuario?.telefone && (
+            <a
+              href={`https://wa.me/${usuario.telefone.replace(/\D/g, "")}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              title="WhatsApp do Time"
+              onClick={(e) => e.stopPropagation()}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                gap: "0.4rem",
+                color: "var(--muted)",
+                textDecoration: "none",
+                fontSize: "0.8rem",
+              }}
+            >
+              <FaWhatsapp />
+              <span>WhatsApp</span>
+            </a>
+          )}
+        </div>
+      )}
 
       {/* Membros (mini-avatares) */}
       {membros && membros.length > 0 && (

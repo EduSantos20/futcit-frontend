@@ -22,6 +22,7 @@ const VAZIO = {
   numerJogadores: "",
   horariosDisponiveis: "",
   escudoUrl: "",
+  instagram: "", // Adicionado campo para Instagram
 };
 const LIMITE = 2;
 
@@ -413,6 +414,7 @@ export default function MeusTimes() {
                             numerJogadores: t.numerJogadores,
                             horariosDisponiveis: t.horariosDisponiveis || "",
                             escudoUrl: t.escudoUrl || "",
+                            instagram: t.instagram || "", // Popula o campo instagram ao editar
                           });
                           setPreviewEscudo(t.escudoUrl || null);
                           setEscudoFile(null);
@@ -783,6 +785,15 @@ export default function MeusTimes() {
                 placeholder="Sábados e domingos — tarde"
                 value={form.horariosDisponiveis}
                 onChange={set("horariosDisponiveis")}
+              />
+            </div>
+            <div className="form-group">
+              <label>Instagram do time (usuário)</label>
+              <input
+                placeholder="Ex: futcit_oficial"
+                value={form.instagram}
+                onChange={set("instagram")}
+                maxLength={30} // Limite de caracteres para username do Instagram
               />
             </div>
             <div className="modal-actions">
