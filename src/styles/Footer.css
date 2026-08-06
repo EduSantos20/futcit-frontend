@@ -1,0 +1,39 @@
+.app-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--card); /* Usando uma variável do tema do seu app */
+    color: var(--muted);
+    padding: 0.75rem 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 1rem;
+    border-top: 1px solid var(--borda);
+    font-size: 0.85rem;
+    z-index: 1000;
+    flex-wrap: wrap; /* Para melhor responsividade em telas pequenas */
+}
+
+.app-footer span {
+    white-space: nowrap;
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+.social-links a {
+    color: var(--muted);
+    font-size: 1.2rem;
+    transition: color 0.2s ease-in-out;
+    display: inline-flex;
+    align-items: center;
+}
+
+.social-links a:hover {
+    color: var(--verde); /* Cor de hover comum no seu app */
+}

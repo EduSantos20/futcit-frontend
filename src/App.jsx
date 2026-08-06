@@ -2,6 +2,7 @@ import { useEffect } from 'react'
 import { Routes, Route, Navigate } from 'react-router-dom'
 import useAuth from './store/authStore'
 import Navbar from './components/Navbar'
+import Footer from './components/Footer'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import GoogleCallbackPage from './pages/GoogleCallbackPage'
@@ -29,6 +30,7 @@ export default function App() {
   return (
     <>
       <Navbar />
+      <Footer />
       <Routes>
         <Route path="/login"      element={<LoginPage />} />
         <Route path="/registrar"  element={<RegisterPage />} />
@@ -51,6 +53,7 @@ export default function App() {
 
         <Route path="/" element={<Navigate to="/times" replace />} />
       </Routes>
+
     </>
   )
 }

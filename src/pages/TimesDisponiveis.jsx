@@ -30,8 +30,7 @@ export default function TimesDisponiveis() {
   timesApi
     .disponiveis()
     .then(({ data }) => {
-      console.log("Times disponíveis:", data);
-
+  
       const listaTimes = Array.isArray(data)
         ? data
         : data?.content || data?.data || data?.times || [];
