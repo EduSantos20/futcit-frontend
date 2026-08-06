@@ -61,7 +61,7 @@ export default function Navbar() {
 
         <NavLink to="/" className="navbar-brand" onClick={fecharMenu}>
           <img src="/img/bola-removebg-preview.png" alt="Bola de futebol com as cores verde e azul " />
-          FUTEBOL <span>DA CIDADE</span>
+          FUT <span>CITY</span>
         </NavLink>
 
         <div className={`navbar-links ${menuAberto ? "active" : ""}`}>
